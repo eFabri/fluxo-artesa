@@ -59,39 +59,26 @@ describe('DoorIcon', () => {
     expect(svg?.getAttribute('height')).toBe('64');
   });
 
-  it('renders extra line element when open', () => {
+  it('renders floor line element in both states', () => {
+    const { container: c1 } = render(<DoorIcon isOpen={false} />);
+    expect(c1.querySelector('line')).toBeTruthy();
+    const { container: c2 } = render(<DoorIcon isOpen={true} />);
+    expect(c2.querySelector('line')).toBeTruthy();
+  });
+
+  it('renders a rect (door leaf) when closed', () => {
+    const { container } = render(<DoorIcon isOpen={false} />);
+    expect(container.querySelector('rect')).toBeTruthy();
+  });
+
+  it('does not render a rect when open (door is ajar)', () => {
     const { container } = render(<DoorIcon isOpen={true} />);
-    expect(container.querySelector('line')).toBeTruthy();
+    expect(container.querySelector('rect')).toBeNull();
   });
 
-  it('does not render extra line element when closed', () => {
+  it('renders door knob circle when closed', () => {
     const { container } = render(<DoorIcon isOpen={false} />);
-    expect(container.querySelector('line')).toBeNull();
-  });
-
-  it('uses instant transition when reduced motion is enabled', () => {
-    mockReducedMotion = true;
-    const { container } = render(<DoorIcon isOpen={false} />);
-    const path = container.querySelector('[data-testid="motion-path"]');
-    const transition = JSON.parse(path?.getAttribute('data-transition') ?? '{}');
-    expect(transition.duration).toBe(0);
-  });
-
-  it('uses duration 0.5 with easeOut when reduced motion is disabled', () => {
-    mockReducedMotion = false;
-    const { container } = render(<DoorIcon isOpen={false} />);
-    const path = container.querySelector('[data-testid="motion-path"]');
-    const transition = JSON.parse(path?.getAttribute('data-transition') ?? '{}');
-    expect(transition.duration).toBe(0.5);
-    expect(transition.ease).toBe('easeOut');
-  });
-
-  it('uses instant transition on ajar line when reduced motion is enabled', () => {
-    mockReducedMotion = true;
-    const { container } = render(<DoorIcon isOpen={true} />);
-    const line = container.querySelector('[data-testid="motion-line"]');
-    const transition = JSON.parse(line?.getAttribute('data-transition') ?? '{}');
-    expect(transition.duration).toBe(0);
+    expect(container.querySelector('circle')).toBeTruthy();
   });
 });
 

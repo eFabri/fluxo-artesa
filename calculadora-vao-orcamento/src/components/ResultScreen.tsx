@@ -32,9 +32,11 @@ export function ResultScreen({ nome, vao, portas, whatsappUrl }: ResultScreenPro
   const fechadas = PORTAS.filter(p => !portas[p.key]).length;
 
   const closingCopy =
-    fechadas >= 2
-      ? `${nome}, seu ateliê está perdendo esse valor porque ${fechadas} das suas 3 portas estão fechadas.`
-      : `${nome}, suas portas estão bem encaminhadas — o vazamento vem de outro lugar. Vale entender melhor onde.`;
+    fechadas === 3
+      ? `${nome}, as 3 portas do seu ateliê estão fechadas — é por isso que esse valor está escapando todo mês.`
+      : fechadas >= 1
+        ? `${nome}, ${fechadas} das suas portas estão fechadas — é por ali que esse valor está escapando.`
+        : `${nome}, suas portas estão bem encaminhadas — o vazamento vem de outro lugar. Vale entender melhor onde.`;
 
   return (
     <div className="min-h-screen bg-ink-navy text-linen flex flex-col items-center px-5 pt-10 pb-10">
@@ -59,7 +61,7 @@ export function ResultScreen({ nome, vao, portas, whatsappUrl }: ResultScreenPro
       </motion.div>
 
       {/* 3 Portas */}
-      <div className="w-full max-w-sm grid grid-cols-3 gap-4 mb-8">
+      <div className="w-full max-w-sm grid grid-cols-3 gap-4 mb-10">
         {PORTAS.map((p, i) => (
           <motion.div
             key={p.key}
@@ -76,6 +78,9 @@ export function ResultScreen({ nome, vao, portas, whatsappUrl }: ResultScreenPro
           </motion.div>
         ))}
       </div>
+
+      {/* Divider */}
+      <div className="w-full max-w-sm border-t border-linen/20 mb-8" />
 
       {/* Dynamic closing copy */}
       <motion.p

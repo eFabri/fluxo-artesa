@@ -1,19 +1,10 @@
-import { motion } from 'framer-motion';
-import { useReducedMotion } from '../../hooks/useReducedMotion';
-
 interface DoorIconProps {
   isOpen: boolean;
   size?: number;
 }
 
 export function DoorIcon({ isOpen, size = 48 }: DoorIconProps) {
-  const reduce = useReducedMotion();
   const color = isOpen ? '#7C8B6F' : '#B5503E';
-
-  // Closed: full rectangular frame  M4,22 L4,2 L20,2 L20,22 L4,22
-  // Open:   frame missing bottom-right + ajar leaf  M4,22 L4,2 L20,2 L20,10 M20,22 L4,22 M14,12 L16,12
-  const closedPath = 'M4 22 L4 2 L20 2 L20 22 L4 22';
-  const openPath   = 'M4 22 L4 2 L20 2 L20 22 L4 22 M11 12 A1 1 0 1 0 11.01 12';
 
   return (
     <svg
@@ -25,23 +16,22 @@ export function DoorIcon({ isOpen, size = 48 }: DoorIconProps) {
       strokeWidth="1.75"
       strokeLinecap="round"
       strokeLinejoin="round"
+      aria-label={isOpen ? 'Porta aberta' : 'Porta fechada'}
     >
-      <motion.path
-        d={isOpen ? openPath : closedPath}
-        initial={{ pathLength: 0, opacity: 0 }}
-        animate={{ pathLength: 1, opacity: 1 }}
-        transition={reduce ? { duration: 0 } : { duration: 0.5, ease: 'easeOut' }}
-      />
-      {isOpen && (
-        <motion.line
-          x1="14" y1="6" x2="18" y2="18"
-          stroke={color}
-          strokeWidth="1.75"
-          strokeLinecap="round"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: 1 }}
-          transition={reduce ? { duration: 0 } : { duration: 0.5, ease: 'easeOut' }}
-        />
+      {/* Frame: left post, top bar, right post */}
+      <path d="M4 22 V3 H20 V22" />
+      {/* Floor */}
+      <line x1="2" y1="22" x2="22" y2="22" />
+
+      {isOpen ? (
+        /* Open: ajar door leaf (pushed inward) + handle visible */
+        <path d="M4 3 L13 4.5 V19.5 L4 21" strokeOpacity="0.55" />
+      ) : (
+        /* Closed: full door leaf fills frame + handle knob */
+        <>
+          <rect x="4" y="3" width="16" height="19" />
+          <circle cx="16.5" cy="13" r="1.2" fill={color} stroke="none" />
+        </>
       )}
     </svg>
   );

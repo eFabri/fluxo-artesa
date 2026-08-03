@@ -28,9 +28,14 @@ describe('ResultScreen', () => {
     expect(link).toHaveAttribute('target', '_blank');
   });
 
-  it('shows "portas fechadas" copy when 2+ closed', () => {
+  it('shows "3 portas fechadas" copy when all 3 closed', () => {
     render(<ResultScreen {...defaultProps} />);
-    expect(screen.getByText(/3 das suas 3 portas estão fechadas/i)).toBeInTheDocument();
+    expect(screen.getByText(/as 3 portas do seu ateliê estão fechadas/i)).toBeInTheDocument();
+  });
+
+  it('shows "N portas fechadas" copy when 1-2 closed', () => {
+    render(<ResultScreen {...defaultProps} portas={{ busca: false, vitrine: false, retorno: true }} />);
+    expect(screen.getByText(/2 das suas portas estão fechadas/i)).toBeInTheDocument();
   });
 
   it('shows "bem encaminhadas" copy when 0-1 closed', () => {

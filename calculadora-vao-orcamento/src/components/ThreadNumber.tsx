@@ -63,14 +63,14 @@ export function ThreadNumber({ mensal, anual }: ThreadNumberProps) {
       </div>
 
       <div
-        className="mt-2 font-mono text-xl text-charcoal-text/50"
+        className="mt-2 font-mono text-xl text-linen/70"
         data-testid="anual-value"
       >
         <AnimatedCounter target={anual} reduce={reduce} />
         <span className="font-body text-sm">/ano</span>
       </div>
 
-      <p className="mt-3 font-body text-xs text-charcoal-text/35">
+      <p className="mt-3 font-body text-xs text-linen/70">
         *estimativa com base nas suas respostas
       </p>
 
