@@ -27,8 +27,9 @@ export function gerarLinkWhatsApp(
   cidade: string,
   vaoMensal: number,
 ): string {
+  const handle = instagram.startsWith('@') ? instagram.slice(1) : instagram;
   const msg =
-    `Oi, Euler! Sou ${nome}, do ateliê @${instagram}, de ${cidade}.\n\n` +
+    `Oi, Euler! Sou ${nome}, do ateliê @${handle}, de ${cidade}.\n\n` +
     `Acabei de fazer o diagnóstico e meu Vão do Orçamento deu R$ ${vaoMensal}/mês.\n\n` +
     `Quero receber minha análise em vídeo!`;
   return `https://wa.me/5531986753530?text=${encodeURIComponent(msg)}`;

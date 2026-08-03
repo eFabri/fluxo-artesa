@@ -40,4 +40,10 @@ describe('gerarLinkWhatsApp', () => {
     expect(url).toContain(encodeURIComponent('BH'));
     expect(url).toContain(encodeURIComponent('R$ 2450'));
   });
+
+  it('strips leading @ from instagram handle', () => {
+    const url = gerarLinkWhatsApp('Ana', '@atelie_ana', 'BH', 1400);
+    expect(url).not.toContain('@@');
+    expect(url).toContain(encodeURIComponent('@atelie_ana'));
+  });
 });
