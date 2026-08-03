@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useReducedMotion } from '../hooks/useReducedMotion';
 
 interface CaptureFieldsProps {
   onSubmit: (nome: string, instagram: string, cidade: string) => void;
@@ -10,6 +11,7 @@ export function CaptureFields({ onSubmit }: CaptureFieldsProps) {
   const [instagram, setInstagram] = useState('');
   const [cidade, setCidade]       = useState('');
   const [touched, setTouched]     = useState(false);
+  const reduce = useReducedMotion();
 
   const valid = nome.trim() && instagram.trim() && cidade.trim();
 
@@ -40,9 +42,7 @@ export function CaptureFields({ onSubmit }: CaptureFieldsProps) {
       <div className="flex flex-col gap-4 flex-1">
         {/* Nome */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0, duration: 0.3 }}
+          {...(reduce ? {} : { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, transition: { delay: 0, duration: 0.3 } })}
         >
           <label htmlFor="capture-nome" className="block font-body text-sm text-charcoal-text/60 mb-1.5">
             Seu nome
@@ -59,9 +59,7 @@ export function CaptureFields({ onSubmit }: CaptureFieldsProps) {
 
         {/* Instagram */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.3 }}
+          {...(reduce ? {} : { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, transition: { delay: 0.1, duration: 0.3 } })}
         >
           <label htmlFor="capture-instagram" className="block font-body text-sm text-charcoal-text/60 mb-1.5">
             Instagram do ateliê
@@ -83,9 +81,7 @@ export function CaptureFields({ onSubmit }: CaptureFieldsProps) {
 
         {/* Cidade */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.3 }}
+          {...(reduce ? {} : { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, transition: { delay: 0.2, duration: 0.3 } })}
         >
           <label htmlFor="capture-cidade" className="block font-body text-sm text-charcoal-text/60 mb-1.5">
             Cidade

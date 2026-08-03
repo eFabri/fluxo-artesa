@@ -21,6 +21,12 @@ vi.mock('framer-motion', () => ({
     }) => <div {...rest}>{children}</div>,
   },
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useReducedMotion: () => false,
+}));
+
+// Mock the hook re-export so the component can import it
+vi.mock('../../hooks/useReducedMotion', () => ({
+  useReducedMotion: () => false,
 }));
 
 describe('CaptureFields', () => {

@@ -1,5 +1,6 @@
 import { useReducer, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useReducedMotion } from './hooks/useReducedMotion';
 import { quizReducer, initialState } from './quiz-reducer';
 import { QUESTIONS } from './data/questions';
 import { calcularVao, calcularPortas, gerarLinkWhatsApp } from './data/calculation';
@@ -10,14 +11,21 @@ import { PreRender }      from './components/PreRender';
 import { CaptureFields }  from './components/CaptureFields';
 import { ResultScreen }   from './components/ResultScreen';
 
-const slideVariants = {
-  enter: { x: 40, opacity: 0 },
-  center: { x: 0,  opacity: 1 },
-  exit:  { x: -40, opacity: 0 },
-};
-
 export default function App() {
   const [state, dispatch] = useReducer(quizReducer, initialState);
+  const reduce = useReducedMotion();
+
+  const slideProps = (key: string) =>
+    reduce
+      ? { key }
+      : {
+          key,
+          variants: { enter: { x: 40, opacity: 0 }, center: { x: 0, opacity: 1 }, exit: { x: -40, opacity: 0 } },
+          initial: 'enter',
+          animate: 'center',
+          exit: 'exit',
+          transition: { duration: 0.35 },
+        };
 
   const handleStart        = useCallback(() => dispatch({ type: 'START' }), []);
   const handleAnswer       = useCallback((optId: string) => {
@@ -71,15 +79,16 @@ export default function App() {
 
       <AnimatePresence mode="wait">
         {state.screen === 'opening' && (
-          <motion.div key="opening" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.35 }}>
+          <motion.div {...slideProps('opening')}>
             <OpeningScreen onStart={handleStart} />
           </motion.div>
         )}
 
         {state.screen === 'question' && (
-          <motion.div key={`q-${state.questionIndex}`} variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.35 }} className="pt-8">
+          <motion.div {...slideProps(`q-${state.questionIndex}`)} className="pt-8">
             <QuestionCard
               question={currentQuestion}
+              questionIndex={state.questionIndex}
               stepLabel={`${state.questionIndex + 1} de ${QUESTIONS.length}`}
               onAnswer={handleAnswer}
               onBack={handleBack}
@@ -88,7 +97,10 @@ export default function App() {
         )}
 
         {state.screen === 'prerender' && (
-          <motion.div key={`pre-${state.questionIndex}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+          <motion.div
+            key={`pre-${state.questionIndex}`}
+            {...(reduce ? {} : { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.2 } })}
+          >
             <PreRender
               text={preRenderText}
               icon={preRenderIcon}
@@ -99,13 +111,16 @@ export default function App() {
         )}
 
         {state.screen === 'capture' && (
-          <motion.div key="capture" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.35 }} className="pt-8">
+          <motion.div {...slideProps('capture')} className="pt-8">
             <CaptureFields onSubmit={handleCapture} />
           </motion.div>
         )}
 
         {state.screen === 'prerender-final' && (
-          <motion.div key="prerender-final" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+          <motion.div
+            key="prerender-final"
+            {...(reduce ? {} : { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.2 } })}
+          >
             <PreRender
               text="Última linha costurada. Montando seu diagnóstico..."
               icon="needle"
@@ -116,7 +131,7 @@ export default function App() {
         )}
 
         {state.screen === 'result' && (
-          <motion.div key="result" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.35 }}>
+          <motion.div {...slideProps('result')}>
             <ResultScreen
               nome={state.capture.nome}
               vao={vao}
