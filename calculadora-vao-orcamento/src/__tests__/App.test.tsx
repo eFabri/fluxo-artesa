@@ -86,7 +86,7 @@ describe('App — full quiz flow', () => {
     await act(async () => { vi.advanceTimersByTime(3000); });
 
     // Result screen
-    expect(screen.getByText(/Ana, aqui está o seu diagnóstico/i)).toBeInTheDocument();
+    expect(screen.getByText(/Ana, descobrimos por que esse valor está escapando/i)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /minha análise em vídeo/i })).toBeInTheDocument();
 
     vi.useRealTimers();

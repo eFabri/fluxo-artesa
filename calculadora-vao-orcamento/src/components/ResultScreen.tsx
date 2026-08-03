@@ -62,7 +62,7 @@ export function ResultScreen({ nome, vao, portas, whatsappUrl }: ResultScreenPro
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {nome}, aqui está o seu diagnóstico
+        {nome}, descobrimos por que esse valor está escapando
       </motion.h1>
 
       {/* Vão do Orçamento */}
