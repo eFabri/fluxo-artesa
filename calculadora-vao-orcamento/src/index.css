@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink-navy:      #10131C;
+  --linen:         #F4EFE6;
+  --thread-gold:   #B8934A;
+  --stitch-brick:  #B5503E;
+  --sage-open:     #7C8B6F;
+  --charcoal-text: #2B2620;
+  --paper-white:   #FDFCFA;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
