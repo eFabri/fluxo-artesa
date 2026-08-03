@@ -1,5 +1,5 @@
 import { render, screen, act } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { PreRender } from '../../components/PreRender';
 
 // Mock framer-motion to avoid animation issues in tests
@@ -22,6 +22,20 @@ vi.mock('framer-motion', () => ({
   useReducedMotion: () => false,
 }));
 
+// Controllable mock for useReducedMotion
+let mockReducedMotion = false;
+vi.mock('../../hooks/useReducedMotion', () => ({
+  useReducedMotion: () => mockReducedMotion,
+}));
+
+beforeEach(() => {
+  mockReducedMotion = false;
+});
+
+afterEach(() => {
+  mockReducedMotion = false;
+});
+
 describe('PreRender', () => {
   it('renders the text', () => {
     vi.useFakeTimers();
@@ -37,6 +51,15 @@ describe('PreRender', () => {
     expect(onDone).not.toHaveBeenCalled();
     act(() => { vi.advanceTimersByTime(1500); });
     expect(onDone).toHaveBeenCalledOnce();
+    vi.useRealTimers();
+  });
+
+  it('renders instantly without animation when reduced motion is enabled', () => {
+    mockReducedMotion = true;
+    vi.useFakeTimers();
+    render(<PreRender text="Sem animação" onDone={() => {}} />);
+    // Component must still render and show text — no initial/animate props applied
+    expect(screen.getByText('Sem animação')).toBeInTheDocument();
     vi.useRealTimers();
   });
 });

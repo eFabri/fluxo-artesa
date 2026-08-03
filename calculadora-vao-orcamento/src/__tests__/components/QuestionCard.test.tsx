@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { QuestionCard } from '../../components/QuestionCard';
 import { QUESTIONS } from '../../data/questions';
 
@@ -40,6 +40,20 @@ vi.mock('framer-motion', () => ({
   useReducedMotion: () => false,
 }));
 
+// Controllable mock for useReducedMotion
+let mockReducedMotion = false;
+vi.mock('../../hooks/useReducedMotion', () => ({
+  useReducedMotion: () => mockReducedMotion,
+}));
+
+beforeEach(() => {
+  mockReducedMotion = false;
+});
+
+afterEach(() => {
+  mockReducedMotion = false;
+});
+
 describe('QuestionCard', () => {
   const q = QUESTIONS[0];
 
@@ -67,5 +81,15 @@ describe('QuestionCard', () => {
     render(<QuestionCard question={q} stepLabel="1 de 7" onAnswer={() => {}} onBack={onBack} />);
     await userEvent.click(screen.getByRole('button', { name: /voltar/i }));
     expect(onBack).toHaveBeenCalledOnce();
+  });
+
+  it('renders instantly without slide animation when reduced motion is enabled', () => {
+    mockReducedMotion = true;
+    render(<QuestionCard question={q} stepLabel="1 de 7" onAnswer={() => {}} onBack={() => {}} />);
+    // Component must still render question and options — no slide props applied
+    expect(screen.getByText(q.text)).toBeInTheDocument();
+    q.options.forEach(o => {
+      expect(screen.getByText(o.label)).toBeInTheDocument();
+    });
   });
 });

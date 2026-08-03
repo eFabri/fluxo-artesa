@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft } from 'lucide-react';
 import { ChatBubbleIcon } from './icons/ChatBubbleIcon';
 import type { Question } from '../data/types';
+import { useReducedMotion } from '../hooks/useReducedMotion';
 
 interface QuestionCardProps {
   question: Question;
@@ -12,6 +13,17 @@ interface QuestionCardProps {
 }
 
 export function QuestionCard({ question, questionIndex = 0, stepLabel, onAnswer, onBack }: QuestionCardProps) {
+  const reduce = useReducedMotion();
+
+  const slideProps = reduce
+    ? {}
+    : {
+        initial: { x: 50, opacity: 0 },
+        animate: { x: 0, opacity: 1 },
+        exit: { x: -50, opacity: 0 },
+        transition: { duration: 0.4 },
+      };
+
   return (
     <div className="min-h-screen bg-linen flex flex-col px-5 pt-6 pb-8">
       {/* step label */}
@@ -24,10 +36,7 @@ export function QuestionCard({ question, questionIndex = 0, stepLabel, onAnswer,
         <motion.div
           key={questionIndex}
           className="flex-1 flex flex-col"
-          initial={{ x: 50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: -50, opacity: 0 }}
-          transition={{ duration: 0.4, ease: 'easeInOut' }}
+          {...slideProps}
         >
           {question.icon === 'chat' && (
             <div className="mb-4">
