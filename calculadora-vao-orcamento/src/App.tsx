@@ -1,122 +1,133 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useReducer, useCallback } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { quizReducer, initialState } from './quiz-reducer';
+import { QUESTIONS } from './data/questions';
+import { calcularVao, calcularPortas, gerarLinkWhatsApp } from './data/calculation';
+import { OpeningScreen }  from './components/OpeningScreen';
+import { ProgressThread } from './components/ProgressThread';
+import { QuestionCard }   from './components/QuestionCard';
+import { PreRender }      from './components/PreRender';
+import { CaptureFields }  from './components/CaptureFields';
+import { ResultScreen }   from './components/ResultScreen';
 
-function App() {
-  const [count, setCount] = useState(0)
+const TOTAL_STEPS = QUESTIONS.length + 1; // 7 questions + capture
+
+const slideVariants = {
+  enter: { x: 40, opacity: 0 },
+  center: { x: 0,  opacity: 1 },
+  exit:  { x: -40, opacity: 0 },
+};
+
+export default function App() {
+  const [state, dispatch] = useReducer(quizReducer, initialState);
+
+  const handleStart        = useCallback(() => dispatch({ type: 'START' }), []);
+  const handleAnswer       = useCallback((optId: string) => {
+    const q = QUESTIONS[state.questionIndex];
+    dispatch({ type: 'ANSWER', questionId: q.id, value: optId });
+  }, [state.questionIndex]);
+  const handlePreRenderDone      = useCallback(() => dispatch({ type: 'PRERENDER_DONE' }), []);
+  const handleFinalPreRenderDone = useCallback(() => dispatch({ type: 'FINAL_PRERENDER_DONE' }), []);
+  const handleBack         = useCallback(() => dispatch({ type: 'BACK' }), []);
+  const handleCapture      = useCallback((nome: string, instagram: string, cidade: string) => {
+    dispatch({ type: 'CAPTURE_SUBMIT', nome, instagram, cidade });
+  }, []);
+
+  const currentQuestion = QUESTIONS[state.questionIndex];
+  const isQuizScreen = state.screen === 'question' || state.screen === 'prerender' || state.screen === 'capture';
+
+  // Compute result data (only used on result screen)
+  const vao    = calcularVao(state.answers.p2 ?? 'nenhuma', state.answers.p3 ?? 'ate_200');
+  const portas = calcularPortas(state.answers.p4 ?? 'so_concorrentes', state.answers.p5 ?? 'link_bio');
+  const whatsappUrl = gerarLinkWhatsApp(
+    state.capture.nome,
+    state.capture.instagram,
+    state.capture.cidade,
+    vao.mensal,
+  );
+
+  const preRenderText = (() => {
+    if (state.screen !== 'prerender') return '';
+    const q = QUESTIONS[state.questionIndex];
+    const lastAnswer = state.answers[q.id] ?? '';
+    return typeof q.preRenders === 'string' ? q.preRenders : (q.preRenders[lastAnswer] ?? '');
+  })();
+
+  const preRenderIcon = state.screen === 'prerender' && currentQuestion?.icon === 'needle'
+    ? 'needle' as const
+    : undefined;
+
+  const preRenderDelay = state.questionIndex === QUESTIONS.length - 1 ? 2500 : 1500;
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="font-body overflow-hidden">
+      {/* Progress bar — shown during quiz */}
+      {isQuizScreen && (
+        <div className="fixed top-0 left-0 right-0 z-10 bg-linen">
+          <ProgressThread
+            currentStep={state.questionIndex + (state.screen === 'capture' ? 1 : 0)}
+            totalSteps={TOTAL_STEPS}
+          />
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      )}
 
-      <div className="ticks"></div>
+      <AnimatePresence mode="wait">
+        {state.screen === 'opening' && (
+          <motion.div key="opening" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.35 }}>
+            <OpeningScreen onStart={handleStart} />
+          </motion.div>
+        )}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        {state.screen === 'question' && (
+          <motion.div key={`q-${state.questionIndex}`} variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.35 }} className="pt-8">
+            <QuestionCard
+              question={currentQuestion}
+              stepLabel={`${state.questionIndex + 1} de ${QUESTIONS.length}`}
+              onAnswer={handleAnswer}
+              onBack={handleBack}
+            />
+          </motion.div>
+        )}
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        {state.screen === 'prerender' && (
+          <motion.div key={`pre-${state.questionIndex}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+            <PreRender
+              text={preRenderText}
+              icon={preRenderIcon}
+              onDone={handlePreRenderDone}
+              delay={preRenderDelay}
+            />
+          </motion.div>
+        )}
+
+        {state.screen === 'capture' && (
+          <motion.div key="capture" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.35 }} className="pt-8">
+            <CaptureFields onSubmit={handleCapture} />
+          </motion.div>
+        )}
+
+        {state.screen === 'prerender-final' && (
+          <motion.div key="prerender-final" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+            <PreRender
+              text="Última linha costurada. Montando seu diagnóstico..."
+              icon="needle"
+              onDone={handleFinalPreRenderDone}
+              delay={2500}
+            />
+          </motion.div>
+        )}
+
+        {state.screen === 'result' && (
+          <motion.div key="result" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.35 }}>
+            <ResultScreen
+              nome={state.capture.nome}
+              vao={vao}
+              portas={portas}
+              whatsappUrl={whatsappUrl}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 }
-
-export default App
