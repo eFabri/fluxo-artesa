@@ -21,6 +21,28 @@ describe('ResultScreen', () => {
     expect(screen.getByText(/Porta do Retorno/i)).toBeInTheDocument();
   });
 
+  it('shows "Fechada" status text for each closed door', () => {
+    render(<ResultScreen {...defaultProps} />);
+    const fechadaEls = screen.getAllByText('Fechada');
+    expect(fechadaEls).toHaveLength(3);
+  });
+
+  it('shows "Aberta" status text for each open door', () => {
+    render(<ResultScreen {...defaultProps} portas={{ busca: true, vitrine: true, retorno: true }} />);
+    const abertaEls = screen.getAllByText('Aberta');
+    expect(abertaEls).toHaveLength(3);
+  });
+
+  it('shows door description for closed busca', () => {
+    render(<ResultScreen {...defaultProps} />);
+    expect(screen.getByText(/não aparece quando alguém procura no Google/i)).toBeInTheDocument();
+  });
+
+  it('shows door description for open busca', () => {
+    render(<ResultScreen {...defaultProps} portas={{ busca: true, vitrine: false, retorno: false }} />);
+    expect(screen.getByText(/você aparece quando alguém procura no Google/i)).toBeInTheDocument();
+  });
+
   it('renders CTA with correct href', () => {
     render(<ResultScreen {...defaultProps} />);
     const link = screen.getByRole('link', { name: /minha análise em vídeo/i });

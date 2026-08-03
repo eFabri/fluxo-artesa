@@ -5,9 +5,24 @@ import { useReducedMotion } from '../hooks/useReducedMotion';
 import type { VaoResult, PortasResult } from '../data/types';
 
 const PORTAS = [
-  { key: 'busca'   as const, label: 'Porta da Busca'   },
-  { key: 'vitrine' as const, label: 'Porta da Vitrine' },
-  { key: 'retorno' as const, label: 'Porta do Retorno' },
+  {
+    key: 'busca' as const,
+    label: 'Porta da Busca',
+    descFechada: 'seu ateliê não aparece quando alguém procura no Google',
+    descAberta:  'você aparece quando alguém procura no Google',
+  },
+  {
+    key: 'vitrine' as const,
+    label: 'Porta da Vitrine',
+    descFechada: 'sua cliente não vê preço e modelo sem falar com você',
+    descAberta:  'sua cliente já vê tudo sozinha, sem te chamar',
+  },
+  {
+    key: 'retorno' as const,
+    label: 'Porta do Retorno',
+    descFechada: 'quem olhou e não comprou, você nunca mais alcança',
+    descAberta:  'quem olhou e não comprou, você consegue reimpactar',
+  },
 ];
 
 const doorVariants = {
@@ -61,22 +76,37 @@ export function ResultScreen({ nome, vao, portas, whatsappUrl }: ResultScreenPro
       </motion.div>
 
       {/* 3 Portas */}
-      <div className="w-full max-w-sm grid grid-cols-3 gap-4 mb-10">
-        {PORTAS.map((p, i) => (
-          <motion.div
-            key={p.key}
-            className="flex flex-col items-center gap-2"
-            custom={i}
-            variants={reduce ? undefined : doorVariants}
-            initial={reduce ? undefined : 'hidden'}
-            animate={reduce ? undefined : 'visible'}
-          >
-            <DoorIcon isOpen={portas[p.key]} size={48} />
-            <span className="font-body text-xs text-linen/60 text-center leading-tight">
-              {p.label}
-            </span>
-          </motion.div>
-        ))}
+      <div className="w-full max-w-sm grid grid-cols-3 gap-2 mb-10">
+        {PORTAS.map((p, i) => {
+          const isOpen = portas[p.key];
+          const statusLabel = isOpen ? 'Aberta' : 'Fechada';
+          const desc = isOpen ? p.descAberta : p.descFechada;
+          return (
+            <motion.div
+              key={p.key}
+              className="flex flex-col items-center gap-1 text-center"
+              custom={i}
+              variants={reduce ? undefined : doorVariants}
+              initial={reduce ? undefined : 'hidden'}
+              animate={reduce ? undefined : 'visible'}
+            >
+              <DoorIcon isOpen={isOpen} size={44} />
+              <span className="font-body text-xs text-linen/60 leading-tight mt-1">
+                {p.label}
+              </span>
+              <span
+                className={`font-body text-xs font-semibold leading-none ${
+                  isOpen ? 'text-sage-open' : 'text-stitch-brick'
+                }`}
+              >
+                {statusLabel}
+              </span>
+              <span className="font-body text-xs text-linen/60 leading-snug">
+                {desc}
+              </span>
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* Divider */}
