@@ -11,9 +11,12 @@ export function NeedleIcon({ size = 40 }: { size?: number }) {
         stroke="#B8934A"
         strokeWidth="1.75"
         strokeLinecap="round"
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={reduce ? { duration: 0 } : { duration: 1, repeat: Infinity, ease: 'linear' }}
+        initial={{ pathLength: reduce ? 1 : 0 }}
+        animate={
+          reduce
+            ? { pathLength: 1 }
+            : { pathLength: [0, 1, 1, 0], transition: { repeat: Infinity, duration: 2, ease: 'easeInOut' } }
+        }
       />
       {/* thread */}
       <motion.path
@@ -22,9 +25,12 @@ export function NeedleIcon({ size = 40 }: { size?: number }) {
         strokeWidth="1"
         strokeLinecap="round"
         fill="none"
-        initial={{ pathLength: 0, opacity: 0 }}
-        animate={{ pathLength: 1, opacity: 1 }}
-        transition={reduce ? { duration: 0 } : { duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+        initial={{ pathLength: reduce ? 1 : 0, opacity: reduce ? 1 : 0 }}
+        animate={
+          reduce
+            ? { pathLength: 1, opacity: 1 }
+            : { pathLength: [0, 1, 1, 0], opacity: [0, 1, 1, 0], transition: { repeat: Infinity, duration: 2, ease: 'easeInOut' } }
+        }
       />
       {/* eye of needle */}
       <circle cx="12" cy="4" r="1" fill="#B8934A" />

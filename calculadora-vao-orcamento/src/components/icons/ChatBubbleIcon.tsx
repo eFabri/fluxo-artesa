@@ -13,7 +13,7 @@ export function ChatBubbleIcon({ size = 40 }: { size?: number }) {
         strokeLinejoin="round"
         initial={{ pathLength: 0, opacity: 0 }}
         animate={{ pathLength: 1, opacity: 1 }}
-        transition={reduce ? { duration: 0 } : { duration: 0.9, ease: 'easeOut' }}
+        transition={reduce ? { duration: 0 } : { duration: 0.5, ease: 'easeOut' }}
       />
       {/* dots */}
       {[8, 12, 16].map((cx, i) => (

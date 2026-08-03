@@ -30,7 +30,7 @@ export function DoorIcon({ isOpen, size = 48 }: DoorIconProps) {
         d={isOpen ? openPath : closedPath}
         initial={{ pathLength: 0, opacity: 0 }}
         animate={{ pathLength: 1, opacity: 1 }}
-        transition={reduce ? { duration: 0 } : { duration: 0.8, ease: 'easeOut' }}
+        transition={reduce ? { duration: 0 } : { duration: 0.5, ease: 'easeOut' }}
       />
       {isOpen && (
         <motion.line
@@ -40,7 +40,7 @@ export function DoorIcon({ isOpen, size = 48 }: DoorIconProps) {
           strokeLinecap="round"
           initial={{ pathLength: 0, opacity: 0 }}
           animate={{ pathLength: 1, opacity: 1 }}
-          transition={reduce ? { duration: 0 } : { duration: 0.4, delay: 0.8, ease: 'easeOut' }}
+          transition={reduce ? { duration: 0 } : { duration: 0.5, ease: 'easeOut' }}
         />
       )}
     </svg>

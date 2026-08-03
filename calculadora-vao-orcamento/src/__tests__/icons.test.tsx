@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { render } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { DoorIcon } from '../components/icons/DoorIcon';
 import { NeedleIcon } from '../components/icons/NeedleIcon';
 import { ChatBubbleIcon } from '../components/icons/ChatBubbleIcon';
@@ -7,18 +7,32 @@ import { ChatBubbleIcon } from '../components/icons/ChatBubbleIcon';
 // Mock framer-motion to avoid animation issues in tests
 vi.mock('framer-motion', () => ({
   motion: {
-    path: ({ d, stroke, strokeWidth, strokeLinecap, strokeLinejoin, ...rest }: React.SVGProps<SVGPathElement>) => (
-      <path d={d} stroke={stroke} strokeWidth={strokeWidth} strokeLinecap={strokeLinecap} strokeLinejoin={strokeLinejoin} data-testid="motion-path" />
+    path: ({ d, stroke, strokeWidth, strokeLinecap, strokeLinejoin, initial, animate, transition, ...rest }: React.SVGProps<SVGPathElement> & { initial?: unknown; animate?: unknown; transition?: unknown }) => (
+      <path d={d} stroke={stroke} strokeWidth={strokeWidth} strokeLinecap={strokeLinecap} strokeLinejoin={strokeLinejoin} data-testid="motion-path" data-animate={JSON.stringify(animate)} data-transition={JSON.stringify(transition)} />
     ),
-    line: ({ x1, y1, x2, y2, stroke, strokeWidth, strokeLinecap, ...rest }: React.SVGProps<SVGLineElement>) => (
-      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={stroke} strokeWidth={strokeWidth} strokeLinecap={strokeLinecap} data-testid="motion-line" />
+    line: ({ x1, y1, x2, y2, stroke, strokeWidth, strokeLinecap, initial, animate, transition, ...rest }: React.SVGProps<SVGLineElement> & { initial?: unknown; animate?: unknown; transition?: unknown }) => (
+      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={stroke} strokeWidth={strokeWidth} strokeLinecap={strokeLinecap} data-testid="motion-line" data-animate={JSON.stringify(animate)} data-transition={JSON.stringify(transition)} />
     ),
-    circle: ({ cx, cy, r, fill, ...rest }: React.SVGProps<SVGCircleElement>) => (
+    circle: ({ cx, cy, r, fill, initial, animate, transition, ...rest }: React.SVGProps<SVGCircleElement> & { initial?: unknown; animate?: unknown; transition?: unknown }) => (
       <circle cx={cx} cy={cy} r={r} fill={fill} data-testid="motion-circle" />
     ),
   },
   useReducedMotion: () => false,
 }));
+
+// Controllable mock for useReducedMotion
+let mockReducedMotion = false;
+vi.mock('../hooks/useReducedMotion', () => ({
+  useReducedMotion: () => mockReducedMotion,
+}));
+
+beforeEach(() => {
+  mockReducedMotion = false;
+});
+
+afterEach(() => {
+  mockReducedMotion = false;
+});
 
 describe('DoorIcon', () => {
   it('renders an SVG element', () => {
@@ -54,6 +68,31 @@ describe('DoorIcon', () => {
     const { container } = render(<DoorIcon isOpen={false} />);
     expect(container.querySelector('line')).toBeNull();
   });
+
+  it('uses instant transition when reduced motion is enabled', () => {
+    mockReducedMotion = true;
+    const { container } = render(<DoorIcon isOpen={false} />);
+    const path = container.querySelector('[data-testid="motion-path"]');
+    const transition = JSON.parse(path?.getAttribute('data-transition') ?? '{}');
+    expect(transition.duration).toBe(0);
+  });
+
+  it('uses duration 0.5 with easeOut when reduced motion is disabled', () => {
+    mockReducedMotion = false;
+    const { container } = render(<DoorIcon isOpen={false} />);
+    const path = container.querySelector('[data-testid="motion-path"]');
+    const transition = JSON.parse(path?.getAttribute('data-transition') ?? '{}');
+    expect(transition.duration).toBe(0.5);
+    expect(transition.ease).toBe('easeOut');
+  });
+
+  it('uses instant transition on ajar line when reduced motion is enabled', () => {
+    mockReducedMotion = true;
+    const { container } = render(<DoorIcon isOpen={true} />);
+    const line = container.querySelector('[data-testid="motion-line"]');
+    const transition = JSON.parse(line?.getAttribute('data-transition') ?? '{}');
+    expect(transition.duration).toBe(0);
+  });
 });
 
 describe('NeedleIcon', () => {
@@ -80,6 +119,31 @@ describe('NeedleIcon', () => {
     const paths = container.querySelectorAll('[data-testid="motion-path"]');
     expect(paths.length).toBeGreaterThanOrEqual(2);
   });
+
+  it('renders as static (pathLength: 1) when reduced motion is enabled', () => {
+    mockReducedMotion = true;
+    const { container } = render(<NeedleIcon />);
+    const paths = container.querySelectorAll('[data-testid="motion-path"]');
+    // Both needle body and thread should animate to static pathLength: 1
+    paths.forEach((path) => {
+      const animate = JSON.parse(path.getAttribute('data-animate') ?? '{}');
+      expect(animate.pathLength).toBe(1);
+      // No repeat/loop
+      expect(animate.transition).toBeUndefined();
+    });
+  });
+
+  it('uses looping animation when reduced motion is disabled', () => {
+    mockReducedMotion = false;
+    const { container } = render(<NeedleIcon />);
+    const paths = container.querySelectorAll('[data-testid="motion-path"]');
+    const needlePath = paths[0];
+    const animate = JSON.parse(needlePath.getAttribute('data-animate') ?? '{}');
+    // Should use array-based pathLength for looping
+    expect(Array.isArray(animate.pathLength)).toBe(true);
+    // JSON.stringify converts Infinity to null; null means repeat: Infinity was set
+    expect(animate.transition?.repeat).toBeNull();
+  });
 });
 
 describe('ChatBubbleIcon', () => {
@@ -105,6 +169,23 @@ describe('ChatBubbleIcon', () => {
     const svg = container.querySelector('svg');
     expect(svg?.getAttribute('width')).toBe('56');
     expect(svg?.getAttribute('height')).toBe('56');
+  });
+
+  it('uses instant transition when reduced motion is enabled', () => {
+    mockReducedMotion = true;
+    const { container } = render(<ChatBubbleIcon />);
+    const path = container.querySelector('[data-testid="motion-path"]');
+    const transition = JSON.parse(path?.getAttribute('data-transition') ?? '{}');
+    expect(transition.duration).toBe(0);
+  });
+
+  it('uses duration 0.5 with easeOut when reduced motion is disabled', () => {
+    mockReducedMotion = false;
+    const { container } = render(<ChatBubbleIcon />);
+    const path = container.querySelector('[data-testid="motion-path"]');
+    const transition = JSON.parse(path?.getAttribute('data-transition') ?? '{}');
+    expect(transition.duration).toBe(0.5);
+    expect(transition.ease).toBe('easeOut');
   });
 });
 
