@@ -10,8 +10,6 @@ import { PreRender }      from './components/PreRender';
 import { CaptureFields }  from './components/CaptureFields';
 import { ResultScreen }   from './components/ResultScreen';
 
-const TOTAL_STEPS = QUESTIONS.length + 1; // 7 questions + capture
-
 const slideVariants = {
   enter: { x: 40, opacity: 0 },
   center: { x: 0,  opacity: 1 },

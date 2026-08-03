@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import type { Transition } from 'framer-motion';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 
 interface ProgressThreadProps {
@@ -13,7 +14,7 @@ export function ProgressThread({ currentStep, totalSteps }: ProgressThreadProps)
   const progress = currentStep / totalSteps;
   const progressX2 = progress * VIEWBOX_WIDTH;
 
-  const transition = reduce
+  const transition: Transition = reduce
     ? { duration: 0 }
     : { duration: 0.4, ease: 'easeOut' };
 
