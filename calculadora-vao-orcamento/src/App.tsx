@@ -65,8 +65,8 @@ export default function App() {
       {isQuizScreen && (
         <div className="fixed top-0 left-0 right-0 z-10 bg-linen">
           <ProgressThread
-            currentStep={state.questionIndex + (state.screen === 'capture' ? 1 : 0)}
-            totalSteps={TOTAL_STEPS}
+            currentStep={state.questionIndex + 1}
+            totalSteps={QUESTIONS.length}
           />
         </div>
       )}
