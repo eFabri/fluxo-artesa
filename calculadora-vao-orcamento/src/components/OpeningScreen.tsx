@@ -17,7 +17,7 @@ export function OpeningScreen({ onStart }: OpeningScreenProps) {
       <div className="w-full max-w-md flex flex-col items-center gap-6 pt-4">
         <div className="relative w-64 h-64 overflow-hidden rounded-2xl shadow-2xl">
           <img
-            src="/img2.webp"
+            src="https://res.cloudinary.com/def9lnal7/image/upload/v1785419996/ChatGPT_Image_30_de_jul._de_2026_10_59_00_3_qgsgnx.webp"
             alt="Euler Fabri"
             loading="lazy"
             className="w-full h-full object-cover object-top"

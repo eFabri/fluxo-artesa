@@ -108,7 +108,7 @@ export function ResultScreen({ nome, vao, portas, whatsappUrl }: ResultScreenPro
         transition={{ delay: 1.3, duration: 0.4 }}
       >
         <img
-          src="/img1.webp"
+          src="https://res.cloudinary.com/def9lnal7/image/upload/v1785419996/ChatGPT_Image_30_de_jul._de_2026_10_58_59_1_csqp3t.webp"
           alt="Euler Fabri"
           className="w-28 h-28 rounded-full"
           loading="lazy"
