@@ -1,8 +1,15 @@
 import { motion } from 'framer-motion';
+import { Check } from 'lucide-react';
 import { ThreadNumber } from './ThreadNumber';
 import { DoorIcon } from './icons/DoorIcon';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import type { VaoResult, PortasResult } from '../data/types';
+
+const VIDEO_BULLETS = [
+  'Qual das suas portas abrir primeiro pra parar a perda esse mês',
+  'Um plano específico pro SEU ateliê — não genérico',
+  'Quanto tempo leva pra reverter isso, sem enrolação',
+];
 
 const PORTAS = [
   {
@@ -121,6 +128,26 @@ export function ResultScreen({ nome, vao, portas, whatsappUrl }: ResultScreenPro
       >
         {closingCopy}
       </motion.p>
+
+      {/* Value summary */}
+      <motion.div
+        className="w-full max-w-xs mb-8"
+        initial={reduce ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.9 + PORTAS.length * 0.15, duration: 0.5 }}
+      >
+        <p className="font-body text-xs uppercase tracking-wide text-linen/50 mb-3">
+          No vídeo você vai descobrir:
+        </p>
+        <ul className="flex flex-col gap-2">
+          {VIDEO_BULLETS.map((bullet) => (
+            <li key={bullet} className="flex items-start gap-2">
+              <Check size={16} className="text-thread-gold shrink-0 mt-0.5" />
+              <span className="font-body text-sm text-linen/80">{bullet}</span>
+            </li>
+          ))}
+        </ul>
+      </motion.div>
 
       {/* CTA */}
       <motion.a
