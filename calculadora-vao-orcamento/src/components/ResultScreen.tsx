@@ -149,6 +149,26 @@ export function ResultScreen({ nome, vao, portas, whatsappUrl }: ResultScreenPro
         </ul>
       </motion.div>
 
+      {/* Result promise */}
+      <motion.p
+        className="font-body text-sm text-linen/70 text-center leading-relaxed max-w-xs mx-auto mb-4"
+        initial={reduce ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.05 + PORTAS.length * 0.15, duration: 0.5 }}
+      >
+        Todo ateliê que passa pelo diagnóstico e aplica o plano começa a receber pedidos no automático, sem depender só do WhatsApp.
+      </motion.p>
+
+      {/* Urgency */}
+      <motion.p
+        className="font-body text-xs text-linen/60 text-center mb-3"
+        initial={reduce ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.1 + PORTAS.length * 0.15, duration: 0.5 }}
+      >
+        Gravo essa análise pra 8 ateliês por semana — respondo por ordem de chegada.
+      </motion.p>
+
       {/* CTA */}
       <motion.a
         href={whatsappUrl}
@@ -157,10 +177,20 @@ export function ResultScreen({ nome, vao, portas, whatsappUrl }: ResultScreenPro
         className="w-full max-w-sm py-4 bg-thread-gold text-ink-navy font-body font-semibold text-lg rounded-xl text-center hover:brightness-110 active:scale-95 transition-all duration-150 block"
         initial={reduce ? false : { opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.1, duration: 0.4 }}
+        transition={{ delay: 1.2 + PORTAS.length * 0.15, duration: 0.4 }}
       >
         Quero minha análise em vídeo, grátis
       </motion.a>
+
+      {/* P.S. */}
+      <motion.p
+        className="font-body text-xs text-linen/50 text-center italic mt-4"
+        initial={reduce ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.35 + PORTAS.length * 0.15, duration: 0.4 }}
+      >
+        P.S. — quanto mais cedo você começar, menos meses desse valor você perde.
+      </motion.p>
 
       {/* Footer: Euler signature */}
       <motion.div
