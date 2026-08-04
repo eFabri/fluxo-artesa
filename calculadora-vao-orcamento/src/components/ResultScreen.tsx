@@ -5,6 +5,25 @@ import { DoorIcon } from './icons/DoorIcon';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import type { VaoResult, PortasResult } from '../data/types';
 
+const PROOF_IMAGES = [
+  {
+    src: 'https://res.cloudinary.com/def9lnal7/image/upload/v1785843640/compressed_Instagram_bio_page_Mimo_Berc%CC%A7o_202608040835_brkgxk.webp',
+    alt: 'Perfil do Instagram do Mimo & Berço Enxovais, com 5,4 mil seguidores',
+  },
+  {
+    src: 'https://res.cloudinary.com/def9lnal7/image/upload/v1785843640/compressed_Mobile_mockup_Instagram_Bio_page_202608040832_xub5sx.webp',
+    alt: 'Perfil do Instagram do Ateliê Pequeno Urso, com 15,2 mil seguidores',
+  },
+  {
+    src: 'https://res.cloudinary.com/def9lnal7/image/upload/v1785843640/compressed_Captura_de_Tela_2026-08-04_a%CC%80s_08_r9sjch.webp',
+    alt: 'Perfil do Instagram do Ateliê Maria Barcelos, com 22,1 mil seguidores',
+  },
+  {
+    src: 'https://res.cloudinary.com/def9lnal7/image/upload/v1785843640/compressed_Instagram_bio_mockup_screen_202608040832_jnxqpx.webp',
+    alt: 'Perfil do Instagram do Ateliê Doce Ninho, com 15,4 mil seguidores',
+  },
+];
+
 const VIDEO_BULLETS = [
   'Qual das suas portas abrir primeiro pra parar a perda esse mês',
   'Um plano específico pro SEU ateliê — não genérico',
@@ -147,6 +166,30 @@ export function ResultScreen({ nome, vao, portas, whatsappUrl }: ResultScreenPro
             </li>
           ))}
         </ul>
+      </motion.div>
+
+      {/* Social proof carousel */}
+      <motion.div
+        className="w-full max-w-sm mb-8"
+        initial={reduce ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.0 + PORTAS.length * 0.15, duration: 0.5 }}
+      >
+        <p className="font-body text-xs uppercase tracking-wide text-linen/50 text-center mb-3">
+          Ateliês que já têm vitrine e identidade sólida:
+        </p>
+        <div className="flex overflow-x-auto snap-x snap-mandatory gap-3">
+          {PROOF_IMAGES.map((img) => (
+            <div key={img.src} className="snap-start shrink-0 h-44 rounded-lg overflow-hidden">
+              <img
+                src={img.src}
+                alt={img.alt}
+                className="h-full w-auto"
+                loading="lazy"
+              />
+            </div>
+          ))}
+        </div>
       </motion.div>
 
       {/* Result promise */}
