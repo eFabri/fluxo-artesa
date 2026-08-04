@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { useRef, useEffect } from 'react';
+import { motion, animate, useMotionValue } from 'framer-motion';
 import { Check } from 'lucide-react';
 import { ThreadNumber } from './ThreadNumber';
 import { DoorIcon } from './icons/DoorIcon';
@@ -50,6 +51,60 @@ const PORTAS = [
     descAberta:  'quem olhou e não comprou, você consegue reimpactar',
   },
 ];
+
+// w-56 = 224px, gap-3 = 12px → each "slot" = 236px → 4 slots = 944px
+const MARQUEE_DIST = PROOF_IMAGES.length * 236;
+
+function ProofCarousel() {
+  const reduce = useReducedMotion();
+  const doubled = [...PROOF_IMAGES, ...PROOF_IMAGES];
+  const xVal = useMotionValue(0);
+  const controlsRef = useRef<{ pause(): void; play(): void; stop(): void } | null>(null);
+
+  useEffect(() => {
+    if (reduce !== false) return;
+    const ctrl = animate(xVal, [0, -MARQUEE_DIST], {
+      duration: 35,
+      ease: 'linear',
+      repeat: Infinity,
+      repeatType: 'loop',
+    });
+    controlsRef.current = ctrl;
+    return () => ctrl.stop();
+  }, [reduce, xVal]);
+
+  if (reduce !== false) {
+    return (
+      <div className="flex overflow-x-auto snap-x snap-mandatory gap-3">
+        {PROOF_IMAGES.map((img) => (
+          <div key={img.src} className="snap-start shrink-0 w-56 h-44 rounded-lg overflow-hidden">
+            <img src={img.src} alt={img.alt} className="h-full w-full object-contain" loading="lazy" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="relative overflow-hidden"
+      onMouseEnter={() => controlsRef.current?.pause()}
+      onMouseLeave={() => controlsRef.current?.play()}
+      onTouchStart={() => controlsRef.current?.pause()}
+      onTouchEnd={() => controlsRef.current?.play()}
+    >
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-10 z-10 bg-gradient-to-r from-ink-navy to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-10 z-10 bg-gradient-to-l from-ink-navy to-transparent" />
+      <motion.div className="flex gap-3" style={{ x: xVal }}>
+        {doubled.map((img, i) => (
+          <div key={`${img.src}-${i}`} className="shrink-0 w-56 h-44 rounded-lg overflow-hidden">
+            <img src={img.src} alt={img.alt} className="h-full w-full object-contain" loading="lazy" />
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  );
+}
 
 const doorVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -140,12 +195,22 @@ export function ResultScreen({ nome, vao, portas, whatsappUrl }: ResultScreenPro
 
       {/* Dynamic closing copy */}
       <motion.p
-        className="font-body text-base text-linen/80 text-center leading-relaxed max-w-xs mb-8"
+        className="font-body text-base text-linen/80 text-center leading-relaxed max-w-xs mb-4"
         initial={reduce ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 + PORTAS.length * 0.15, duration: 0.5 }}
       >
         {closingCopy}
+      </motion.p>
+
+      {/* Strategy promise — gradient text */}
+      <motion.p
+        className="font-display text-lg font-semibold text-center mb-6 max-w-xs leading-snug bg-gradient-to-r from-thread-gold to-sage-open bg-clip-text text-transparent"
+        initial={reduce ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.75 + PORTAS.length * 0.15, duration: 0.5 }}
+      >
+        Vou criar uma estratégia para seu Ateliê começar a ter novos pedidos todos os dias de clientes novos!
       </motion.p>
 
       {/* Value summary */}
@@ -178,18 +243,7 @@ export function ResultScreen({ nome, vao, portas, whatsappUrl }: ResultScreenPro
         <p className="font-body text-xs uppercase tracking-wide text-linen/50 text-center mb-3">
           Ateliês que já têm vitrine e identidade sólida:
         </p>
-        <div className="flex overflow-x-auto snap-x snap-mandatory gap-3">
-          {PROOF_IMAGES.map((img) => (
-            <div key={img.src} className="snap-start shrink-0 h-44 rounded-lg overflow-hidden">
-              <img
-                src={img.src}
-                alt={img.alt}
-                className="h-full w-auto"
-                loading="lazy"
-              />
-            </div>
-          ))}
-        </div>
+        <ProofCarousel />
       </motion.div>
 
       {/* Result promise */}
